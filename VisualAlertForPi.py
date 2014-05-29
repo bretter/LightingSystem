@@ -4,7 +4,7 @@ import urllib.request, re, time
 page_url = 'http://osi-cc100:9080/stats'
 pattern = '(\d*) CALLS WAITING FOR (\d*):(\d*)'	# define RegEx search pattern
 searchPattern = re.compile(pattern)				# compile pattern into RegEx object
-delayTime = 5
+delayTime = 1
 maxDisconnectTime = 30
 
 # define pin numbers for lights
