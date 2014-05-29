@@ -1,4 +1,4 @@
-import urllib.request, re, time
+import urllib.request, re, time, atexit
 import RPi.GPIO as GPIO
 
 page_url = 'http://osi-cc100:9080/stats'
@@ -19,16 +19,9 @@ class Light:
 		GPIO.setup(pin, GPIO.OUT)
 
 	def setState(self, state):
-		print(self.pin + ' pin ' + str(state))
+		print(str(self.pin) + ' pin ' + str(state))
 		GPIO.output(self.pin, state)
 
-	def On(self):
-		print(self.pin + ' pin ON')		# PLACEHOLDER: Replace with GPIO command
-		#GPIO.output(self.pin, True)
-	
-	def Off(self):
-		print(self.pin + ' pin OFF')	# PLACEHOLDER: Replace with GPIO command
-		#GPIO.output(self.pin, False)
 
 class Tower:
 	def __init__(self, redLight, yellowLight, greenLight):
@@ -110,5 +103,16 @@ def MainLoop():
 		else:										# otherwise delay the remainder of 5 sec
 			time.sleep(delayTime - elapsedTime)
 
+def resetLights():
+	GPIO.setmode(GPIO.BOARD)
+	GPIO.setup(redPin, GPIO.OUT)
+	GPIO.setup(yellowPin, GPIO.OUT)
+	GPIO.setup(greenPin, GPIO.OUT)
+	GPIO.output(redPin, False)
+	GPIO.output(yellowPin, False)
+	GPIO.output(greenPin, False)
+			
+atexit.register(resetLights)
+			
 if __name__ == '__main__':
 	MainLoop()
