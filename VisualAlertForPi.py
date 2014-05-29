@@ -1,39 +1,14 @@
-import urllib.request, re, time
-#import RPi.GPIO as GPIO
+import urllib.request, re, time, atexit
+import LightTower
 
 pageURL = 'http://osi-cc100:9080/stats'
 pattern = '(\d*) CALLS WAITING FOR (\d*):(\d*)'	# define RegEx search pattern
 searchPattern = re.compile(pattern)				# compile pattern into RegEx object
-delayTime = 5
+delayTime = 1
 maxDisconnectTime = 30
+lightTower = LightTower.Tower()
 
-# define pin numbers for lights
-redPin = 'redPin'
-yellowPin = 'yellowPin'
-greenPin = 'greenPin'
-
-class Light:
-	def __init__(self, pin):
-		self.pin = pin
-		#GPIO.setup(pin, GPIO.OUT)
-		#GPIO.setmode(GPIO.BOARD)
-
-	def setState(self, state):
-		print(self.pin + ' pin ' + str(state))
-		#GPIO.output(self.pin, state)
-
-class Tower:
-	def __init__(self, redLight, yellowLight, greenLight):
-		self.redLight    = redLight
-		self.yellowLight = yellowLight
-		self.greenLight  = greenLight
-
-	def setState(self, state):
-		self.redLight.setState(state[0])
-		self.yellowLight.setState(state[1])
-		self.greenLight.setState(state[2])
-
-def updateDisplay(lightTower, points, connectionFailure):
+def updateDisplay(points, connectionFailure):
 
 	# Lis of States
 	# array elements map to lights : [red, yellow, green]
@@ -86,10 +61,6 @@ def getData(address):
 
 
 def MainLoop():
-	Red = Light(redPin)			# instantiate the light and tower objects
-	Yellow = Light(yellowPin)
-	Green = Light(greenPin)
-	LightTower = Tower(Red, Yellow, Green)
 	connectFailCount = 0		# create error counter
 	points = 0
 
@@ -105,12 +76,19 @@ def MainLoop():
 			connectionFailCount = 0
 
 		connectionFailure = connectFailCount*delayTime >= maxDisconnectTime
-		updateDisplay(LightTower, points, connectionFailure)
+		updateDisplay(points, connectionFailure)
 		elapsedTime = time.time() - thisTime		# check time elapsed fetching data
 		if elapsedTime > delayTime:					# proceed if fetching took longer than 5 sec
 			pass
 		else:										# otherwise delay the remainder of 5 sec
 			time.sleep(delayTime - elapsedTime)
+
+
+
+def resetLights():
+	lightTower.setState(allOff)
+
+atexit.register(resetLights)
 
 if __name__ == '__main__':
 	MainLoop()
