@@ -1,7 +1,7 @@
 import urllib.request, re, time
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 
-page_url = 'http://osi-cc100:9080/stats'		
+page_url = 'http://osi-cc100:9080/stats'
 pattern = '(\d*) CALLS WAITING FOR (\d*):(\d*)'	# define RegEx search pattern
 searchPattern = re.compile(pattern)				# compile pattern into RegEx object
 delayTime = 5
@@ -15,81 +15,71 @@ greenPin = 'greenPin'
 class Light:
 	def __init__(self, pin):
 		self.pin = pin
-		GPIO.setup(pin, GPIO.OUT)
-		GPIO.setmode(GPIO.BOARD)
-		
-	def On(self):
-		print(self.pin + ' pin ON')		# PLACEHOLDER: Replace with GPIO command
-		GPIO.output(self.pin, True)
-		
-	def Off(self):
-		print(self.pin + ' pin OFF')	# PLACEHOLDER: Replace with GPIO command
-		GPIO.output(self.pin, False)
-		
-class Tower:							# Establish states for light tower
+		#GPIO.setup(pin, GPIO.OUT)
+		#GPIO.setmode(GPIO.BOARD)
+
+	def setState(self, state):
+		print(self.pin + ' pin ' + str(state))
+		#GPIO.output(self.pin, state)
+##### Commented out while not running on rPi#####
+	# def On(self):
+	# 	print(self.pin + ' pin ON')		# PLACEHOLDER: Replace with GPIO command
+	# 	#GPIO.output(self.pin, True)
+	#
+	# def Off(self):
+	# 	print(self.pin + ' pin OFF')	# PLACEHOLDER: Replace with GPIO command
+	# 	#GPIO.output(self.pin, False)
+
+class Tower:
 	def __init__(self, redLight, yellowLight, greenLight):
-		self.redLight = redLight
+		self.redLight    = redLight
 		self.yellowLight = yellowLight
-		self.greenLight = greenLight
-	
-	def Red(self):
-		self.redLight.On()
-		self.yellowLight.Off()
-		self.greenLight.Off()
-		
-	def YellowRed(self):
-		self.redLight.On()
-		self.yellowLight.On()
-		self.greenLight.Off()
-		
-	def Yellow(self):
-		self.redLight.Off()
-		self.yellowLight.On()
-		self.greenLight.Off()
-	
-	def GreenYellow(self):
-		self.redLight.Off()
-		self.yellowLight.On()
-		self.greenLight.On()
-	
-	def Green(self):
-		self.redLight.Off()
-		self.yellowLight.Off()
-		self.greenLight.On()
-		
-	def AllOff(self):
-		self.redLight.Off()
-		self.yellowLight.Off()
-		self.greenLight.Off()
-	
-	def ConnectionLost(self):
-		self.redLight.On()
-		self.yellowLight.On()
-		self.greenLight.On()
-		
+		self.greenLight  = greenLight
+
+	def setState(self, state):
+		self.redLight.setState(state[0])
+		self.yellowLight.setState(state[1])
+		self.greenLight.setState(state[2])
+
 def DisplayState(lightTower, calls, waitTime, failCount):
+
+	# Lis of States
+	# array elements map to lights : [red, yellow, green]
+	red         = [1, 0, 0]
+	redYellow   = [1, 1, 0]
+	yellow      = [0, 1, 0]
+	yellowGreen = [0, 1, 1]
+	green       = [0, 0, 1]
+
+	allOn       = [1, 1, 1]
+	allOff      = [0, 0, 0]
+	# Aliases
+	conLost     = allOn
+	greenYellow = yellowGreen
+	yellowRed   = redYellow
+
 	callPoints = calls
 	timePoints = waitTime // 60
 	points = callPoints + timePoints
 	if failCount*delayTime >= maxDisconnectTime:
-		lightTower.ConnectionLost()
+		lightTower.setState(conLost)
 	elif points == 0:
-		lightTower.Green()
+		lightTower.setState(green)
 	elif points >= 0 and points < 4:
-		lightTower.GreenYellow()
+		lightTower.setState(yellowGreen)
 	elif points >= 4 and points < 7:
-		lightTower.Yellow()
+		lightTower.setState(yellow)
 	elif points >= 7 and points < 9:
-		lightTower.YellowRed()
+		lightTower.setState(redYellow)
 	elif points >= 9:
-		lightTower.Red()
-		
+		lightTower.setState(red)
+
 def MainLoop():
 	Red = Light(redPin)			# instantiate the light and tower objects
 	Yellow = Light(yellowPin)
 	Green = Light(greenPin)
 	LightTower = Tower(Red, Yellow, Green)
-	
+
 	connectFailCount = 0		# create error counter
 	while True:
 		thisTime = time.time()						# record time when entering loop
@@ -101,18 +91,18 @@ def MainLoop():
 				extracted.group(1), extracted.group(2), extracted.group(3)]
 			print('{0:2s} calls waiting for {1:s}:{2:2s}'.format(callsWaiting, minutesWaiting, secondsWaiting))
 			timeSeconds = int(secondsWaiting) + int(minutesWaiting)*60
-			
+
 		except urllib.error.URLError:				# print error if network lost
 			print('CANNOT CONNECT TO CISCO PHONE STATUS PAGE')
 			connectFailCount += 1					# step fail counter up by 1
-			
+
 		DisplayState(LightTower, int(callsWaiting), timeSeconds, connectFailCount)
-		
+
 		elapsedTime = time.time() - thisTime		# check time elapsed fetching data
 		if elapsedTime > delayTime:					# proceed if fetching took longer than 5 sec
 			pass
 		else:										# otherwise delay the remainder of 5 sec
 			time.sleep(delayTime - elapsedTime)
-			
+
 if __name__ == '__main__':
 	MainLoop()
