@@ -8,9 +8,9 @@ delayTime = 5
 maxDisconnectTime = 30
 
 # define pin numbers for lights
-redPin = 'red'
-yellowPin = 'yellow'
-greenPin = 'green'
+redPin = 'redPin'
+yellowPin = 'yellowPin'
+greenPin = 'greenPin'
 
 class Light:
 	def __init__(self, pin):
