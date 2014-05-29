@@ -41,7 +41,7 @@ class Tower:
 		self.yellowLight.setState(state[1])
 		self.greenLight.setState(state[2])
 
-def DisplayState(lightTower, calls, waitTime, failCount):
+def updateDisplay(lightTower, points, connectionFailure):
 
 	# Lis of States
 	# array elements map to lights : [red, yellow, green]
@@ -58,10 +58,7 @@ def DisplayState(lightTower, calls, waitTime, failCount):
 	greenYellow = yellowGreen
 	yellowRed   = redYellow
 
-	callPoints = calls
-	timePoints = waitTime // 60
-	points = callPoints + timePoints
-	if failCount*delayTime >= maxDisconnectTime:
+	if connectionFailure:
 		lightTower.setState(conLost)
 	elif points == 0:
 		lightTower.setState(green)
@@ -73,6 +70,13 @@ def DisplayState(lightTower, calls, waitTime, failCount):
 		lightTower.setState(redYellow)
 	elif points >= 9:
 		lightTower.setState(red)
+
+def calcPoints(calls, waitTime):
+	callPoints = calls
+	timePoints = waitTime // 60
+	points = callPoints + timePoints
+	return points
+
 
 def MainLoop():
 	Red = Light(redPin)			# instantiate the light and tower objects
@@ -96,7 +100,9 @@ def MainLoop():
 			print('CANNOT CONNECT TO CISCO PHONE STATUS PAGE')
 			connectFailCount += 1					# step fail counter up by 1
 
-		DisplayState(LightTower, int(callsWaiting), timeSeconds, connectFailCount)
+		points = calcPoints(int(callsWaiting), timeSeconds)
+		connectionFailure = connectFailCount*delayTime >= maxDisconnectTime
+		updateDisplay(LightTower, points, connectionFailure)
 
 		elapsedTime = time.time() - thisTime		# check time elapsed fetching data
 		if elapsedTime > delayTime:					# proceed if fetching took longer than 5 sec
