@@ -1,5 +1,5 @@
 import urllib.request, re, time
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 page_url = 'http://osi-cc100:9080/stats'
 pattern = '(\d*) CALLS WAITING FOR (\d*):(\d*)'	# define RegEx search pattern
@@ -8,27 +8,27 @@ delayTime = 1
 maxDisconnectTime = 30
 
 # define pin numbers for lights
-redPin = 'redPin'
-yellowPin = 'yellowPin'
-greenPin = 'greenPin'
+redPin = 11
+yellowPin = 13
+greenPin = 15
 
 class Light:
 	def __init__(self, pin):
 		self.pin = pin
-		#GPIO.setup(pin, GPIO.OUT)
-		#GPIO.setmode(GPIO.BOARD)
+		GPIO.setmode(GPIO.BOARD)
+		GPIO.setup(pin, GPIO.OUT)
 
 	def setState(self, state):
 		print(self.pin + ' pin ' + str(state))
-		#GPIO.output(self.pin, state)
-##### Commented out while not running on rPi#####
-	# def On(self):
-	# 	print(self.pin + ' pin ON')		# PLACEHOLDER: Replace with GPIO command
-	# 	#GPIO.output(self.pin, True)
-	#
-	# def Off(self):
-	# 	print(self.pin + ' pin OFF')	# PLACEHOLDER: Replace with GPIO command
-	# 	#GPIO.output(self.pin, False)
+		GPIO.output(self.pin, state)
+
+	def On(self):
+		print(self.pin + ' pin ON')		# PLACEHOLDER: Replace with GPIO command
+		#GPIO.output(self.pin, True)
+	
+	def Off(self):
+		print(self.pin + ' pin OFF')	# PLACEHOLDER: Replace with GPIO command
+		#GPIO.output(self.pin, False)
 
 class Tower:
 	def __init__(self, redLight, yellowLight, greenLight):
