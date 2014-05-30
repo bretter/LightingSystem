@@ -7,7 +7,7 @@ import os, glob, time
 #deviceFolder = glob.glob(baseDir + '28*')[0]
 #deviceFile = deviceFolder + '/w1_slave'
 
-deviceFile = 'C:/users/jdryden/LightingSystem/TempSensor/example.txt'
+deviceFile = os.path.join(os.getcwd() + '/example.txt')
 
 def readTempRaw():
   f = open(deviceFile)
