@@ -1,8 +1,8 @@
 import urllib.request
-import re
-import time
-import atexit
 import LightTower
+import atexit
+import time
+import re
 
 
 pageURL = 'http://osi-cc100:9080/stats'
