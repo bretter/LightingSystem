@@ -25,3 +25,22 @@ class Tower:
     self.redLight.setState(state[0])
     self.yellowLight.setState(state[1])
     self.greenLight.setState(state[2])
+
+def main():
+  import time
+  tower = Tower()
+  states = [[1, 0, 0]\
+           ,[1, 1, 0]\
+           ,[0, 1, 0]\
+           ,[0, 1, 1]\
+           ,[0, 0, 1]\
+           ,[1, 1, 1]\
+           ,[0, 0, 0]\
+           ]
+
+  for state in states:
+    tower.setState(state)
+    time.sleep(5)
+
+if __name__ == '__main__':
+  main()
