@@ -27,6 +27,13 @@ def readTemp():
     tempF = tempC * 9.0 / 5.0 + 32.0
     return tempC, tempF
 
+def writeToFile(tempC, tempF):
+  f = open('TempReadings.txt','w')
+  f.write('tempC=' + str(tempC) + ', tempF=' + str(tempF))
+  f.close()
+
 while True:
-  print(readTemp())
+  tempC, tempF = readTemp()
+  print(tempC, tempF)
+  writeToFile(tempC,tempF)
   time.sleep(1)
