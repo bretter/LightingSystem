@@ -2,7 +2,7 @@ import SimpleHTTPServer, SocketServer, os
 
 PORT = 8000
 
-os.chdir('~')
+os.chdir('/home/pi/LightingSystem/webServer/')
 
 Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
 
