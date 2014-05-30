@@ -38,9 +38,10 @@ def main():
            ,[0, 0, 0]\
            ]
 
-  for state in states:
-    tower.setState(state)
-    time.sleep(1)
+  while true:
+    for state in states:
+      tower.setState(state)
+      time.sleep(1)
 
 if __name__ == '__main__':
   main()
