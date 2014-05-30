@@ -86,7 +86,7 @@ def MainLoop():
 
 
 def resetLights():
-	lightTower.setState(allOff)
+	lightTower.setState([0,0,0])
 
 atexit.register(resetLights)
 
