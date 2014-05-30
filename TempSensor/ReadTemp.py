@@ -28,7 +28,7 @@ def readTemp():
     return tempC, tempF
 
 def writeToFile(tempC, tempF):
-  f = open('TempReadings.txt','w')
+  f = open('../webServer/TempReadings.txt','w')
   f.write('tempC=' + str(tempC) + ', tempF=' + str(tempF))
   f.close()
 

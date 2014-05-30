@@ -95,7 +95,7 @@ def determineState(points, connectionFailure):
 
 def fileWrite(state):
 	text = str(time.time()) + ' ' + str(state)
-	file = open('currentState.log', 'w')
+	file = open('../webServer/currentLightState.log', 'w')
 	file.write(text)
 	file.close()
 
