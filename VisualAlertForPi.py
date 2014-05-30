@@ -5,7 +5,7 @@ pageURL = 'http://osi-cc100:9080/stats'
 pattern = '(\d*) CALLS WAITING FOR (\d*):(\d*)'	# define RegEx search pattern
 searchPattern = re.compile(pattern)				# compile pattern into RegEx object
 delayTime = 1
-maxDisconnectTime = 30
+maxDisconnectTime = 15
 lightTower = LightTower.Tower()
 
 def MainLoop():
