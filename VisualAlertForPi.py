@@ -29,7 +29,9 @@ def MainLoop():
 			connectFailCount = 0
 
 		connectionFailure = connectFailCount * delayTime >= maxDisconnectTime
-		updateDisplay(points, connectionFailure)
+		state = determineState(points, connectionFailure)
+		lightTower.setState(state)
+		fileWrite(state)
 		elapsedTime = time.time() - thisTime		# check time elapsed fetching data
 		if elapsedTime > delayTime:					# proceed if fetching took longer than 5 sec
 			pass
@@ -60,7 +62,7 @@ def calcPoints(calls, waitTime):
 	return points
 
 
-def updateDisplay(points, connectionFailure):
+def determineState(points, connectionFailure):
 
 	# Lis of States
 	# array elements map to lights : [red, yellow, green]
@@ -78,17 +80,25 @@ def updateDisplay(points, connectionFailure):
 	yellowRed   = redYellow
 
 	if connectionFailure:
-		lightTower.setState(conLost)
+		return conLost
 	elif points == 0:
-		lightTower.setState(green)
+		return green
 	elif points >= 0 and points < 4:
-		lightTower.setState(yellowGreen)
+		return yellowGreen
 	elif points >= 4 and points < 7:
-		lightTower.setState(yellow)
+		return yellow
 	elif points >= 7 and points < 9:
-		lightTower.setState(redYellow)
+		return redYellow
 	elif points >= 9:
-		lightTower.setState(red)
+		return red
+
+
+def fileWrite(state):
+	text = str(time.time()) + ' ' + str(state)
+	file = open('currentState.log', 'w')
+	file.write(text)
+	file.close()
+
 
 
 def resetLights():
