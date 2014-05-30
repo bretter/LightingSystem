@@ -73,7 +73,7 @@ def MainLoop():
 			callsWaiting = newCallsWaiting
 			timeSeconds = newTimeSeconds
 			points = calcPoints(int(callsWaiting), timeSeconds)
-			connectionFailCount = 0
+			connectFailCount = 0
 
 		connectionFailure = connectFailCount*delayTime >= maxDisconnectTime
 		updateDisplay(points, connectionFailure)
