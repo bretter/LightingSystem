@@ -1,0 +1,32 @@
+import os, glob, time
+
+#os.system('modprobe w1-gpio')
+#os.system('modprobe w1-therm')
+
+#baseDir = '/sys/bus/w1/devices'
+#deviceFolder = glob.glob(baseDir + '28*')[0]
+#deviceFile = deviceFolder + '/w1_slave'
+
+deviceFile = 'C:/users/jdryden/LightingSystem/TempSensor/example.txt'
+
+def readTempRaw():
+  f = open(deviceFile)
+  lines = f.readlines()
+  f.close()
+  return lines
+
+def readTemp():
+  lines = readTempRaw()
+  while lines[0].strip()[-3:] != 'YES':
+    time.sleep(0.2)
+    lines = readTempRaw()
+  position = lines[1].find('t=')
+  if position != -1:
+    tempString = lines[1][position+2:]
+    tempC = float(tempString)/1000.0
+    tempF = tempC * 9.0 / 5.0 + 32.0
+    return tempC, tempF
+
+while True:
+  print(readTemp())
+  time.sleep(1)
