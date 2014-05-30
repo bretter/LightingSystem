@@ -1,4 +1,4 @@
-#this is a comment added by brett
+### This is a test script used when writing VisualAlert.py ###
 
 redPin = 'red'
 yellowPin = 'yellow'
@@ -19,10 +19,6 @@ class Tower:
 		self.redLight = redLight
 		self.yellowLight = yellowLight
 		self.greenLight = greenLight
-
-
-
-
 
 	def Red(self):
 		self.redLight.On()
