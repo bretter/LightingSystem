@@ -1,4 +1,7 @@
-import os, glob, time, sys
+import os
+import glob
+import time
+import sys
 
 #os.system('modprobe w1-gpio')
 #os.system('modprobe w1-therm')
@@ -6,6 +9,11 @@ import os, glob, time, sys
 #baseDir = '/sys/bus/w1/devices'
 #deviceFolder = glob.glob(baseDir + '28*')[0]
 #deviceFile = deviceFolder + '/w1_slave'
+
+try:
+  DEBUG = sys.argv[1] == '-d'
+except IndexError:
+  DEBUG = False
 
 deviceFile = os.path.join(os.getcwd() + '/example.txt')
 
@@ -34,6 +42,6 @@ def writeToFile(tempC, tempF):
 
 while True:
   tempC, tempF = readTemp()
-  print(tempC, tempF)
+  if DEBUG: print(tempC, tempF)
   writeToFile(tempC,tempF)
   time.sleep(1)
