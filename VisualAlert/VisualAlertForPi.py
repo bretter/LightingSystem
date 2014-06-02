@@ -3,14 +3,18 @@ import LightTower
 import atexit
 import time
 import re
-
+import sys
 
 pageURL = 'http://osi-cc100:9080/stats'
 pattern = '(\d*) CALLS WAITING FOR (\d*):(\d*)'  # define RegEx search pattern
 searchPattern = re.compile(pattern)				# compile pattern into RegEx object
 delayTime = 1
 maxDisconnectTime = 15
-lightTower = LightTower.Tower()
+try:																	# check for DEBUG argument
+	DEBUG = sys.argv[1] == '-d'
+except IndexError:
+	DEBUG = False
+lightTower = LightTower.Tower(DEBUG)
 
 
 def MainLoop():
@@ -46,7 +50,7 @@ def getData(address):
 		extracted = searchPattern.search(data)  # extract desired values from data
 		[calls, minutes, seconds] = [
 			extracted.group(1), extracted.group(2), extracted.group(3)]
-		print('{0:2s} calls waiting for {1:s}:{2:2s}'.format(calls, minutes, seconds))
+		if DEBUG: print('{0:2s} calls waiting for {1:s}:{2:2s}'.format(calls, minutes, seconds))
 		timeSeconds = int(seconds) + int(minutes) * 60
 		return [calls, timeSeconds, connectFail]
 	except urllib.error.URLError:				# print error if network lost
