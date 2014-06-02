@@ -2,16 +2,24 @@
 
 ## Delete prexisting install
 
-rm /opt/LightingSystem
+rm -rf /opt/LightingSystem
+rm /bin/visualalert
 
 ## Clone git repo
 
-cd /opt && git clone https://github.com/bretter/LightingSystem.git
+git clone -b Dev https://github.com/bretter/LightingSystem.git /opt/LightingSystem
 
 ## Make startup script executable
 
-cd /opt/LightingSystem && chmod +x visualalert.sh
+chmod +x /opt/LightingSystem/visualalert.sh
 
 ## Copy over launch script
 
-cd /bin && ln -s /opt/LightingSystem/visualalert.sh
+ln -s /opt/LightingSystem/visualalert.sh /bin/visualalert
+
+## Add to chrontab startup
+
+#crontab -l | { cat; echo "@reboot visualalert"; } | crontab -
+crontab -l > crontab.tmp
+echo "@reboot visualalert" >> crontab.tmp
+crontab crontab.tmp
