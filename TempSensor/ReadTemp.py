@@ -1,4 +1,4 @@
-import os, glob, time
+import os, glob, time, sys
 
 #os.system('modprobe w1-gpio')
 #os.system('modprobe w1-therm')
