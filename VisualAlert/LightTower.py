@@ -39,7 +39,7 @@ def main():
            ,[0, 0, 0]\
            ]
 
-  while true:
+  while True:
     for state in states:
       tower.setState(state)
       time.sleep(1)
