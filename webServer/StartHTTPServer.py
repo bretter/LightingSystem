@@ -1,4 +1,6 @@
-import SimpleHTTPServer, SocketServer, os
+import SimpleHTTPServer
+import SocketServer
+import os
 
 PORT = 8000
 
