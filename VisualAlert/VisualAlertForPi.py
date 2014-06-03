@@ -10,6 +10,17 @@ pattern = '(\d*) CALLS WAITING FOR (\d*):(\d*)'  # define RegEx search pattern
 searchPattern = re.compile(pattern)				# compile pattern into RegEx object
 delayTime = 1
 maxDisconnectTime = 15
+
+# List of light states
+red         = [1, 0, 0]
+redYellow   = [1, 1, 0]
+yellow      = [0, 1, 0]
+yellowGreen = [0, 1, 1]
+green       = [0, 0, 1]
+allOn       = [1, 1, 1]
+allOff      = [0, 0, 0]
+
+
 try:																	# check for DEBUG argument
 	DEBUG = sys.argv[1] == '-d'
 except IndexError:
@@ -20,6 +31,7 @@ lightTower = LightTower.Tower(DEBUG)
 def MainLoop():
 	connectFailCount = 0		# create error counter
 	points = 0
+	state = allOff
 
 	while True:
 		thisTime = time.time()						# record time when entering loop
@@ -33,9 +45,11 @@ def MainLoop():
 			connectFailCount = 0
 
 		connectionFailure = connectFailCount * delayTime >= maxDisconnectTime
-		state = determineState(points, connectionFailure)
-		lightTower.setState(state)
-		fileWrite(state)
+		newState = determineState(points, connectionFailure)
+		if newState != state:
+			state = newState
+			lightTower.setState(state)
+			fileWrite(state)
 		elapsedTime = time.time() - thisTime		# check time elapsed fetching data
 		if elapsedTime > delayTime:					# proceed if fetching took longer than 5 sec
 			pass
@@ -67,22 +81,6 @@ def calcPoints(calls, waitTime):
 
 
 def determineState(points, connectionFailure):
-
-	# Lis of States
-	# array elements map to lights : [red, yellow, green]
-	red         = [1, 0, 0]
-	redYellow   = [1, 1, 0]
-	yellow      = [0, 1, 0]
-	yellowGreen = [0, 1, 1]
-	green       = [0, 0, 1]
-
-	allOn       = [1, 1, 1]
-	allOff      = [0, 0, 0]
-	# Aliases
-	conLost     = allOn
-	greenYellow = yellowGreen
-	yellowRed   = redYellow
-
 	if connectionFailure:
 		return conLost
 	elif points == 0:
