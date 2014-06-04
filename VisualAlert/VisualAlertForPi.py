@@ -1,5 +1,6 @@
 import urllib.request
 import LightTower
+import contextlib
 import atexit
 import time
 import re
@@ -59,7 +60,8 @@ def MainLoop():
 
 def getData(address):
 	try:
-		data = str(urllib.request.urlopen(address).read())  # fetch CISCO phone data
+		connection = urllib.request.urlopen(address)
+		data = str(connection.read())  # fetch CISCO phone data
 		connectFail = 0					# reset error counter
 		extracted = searchPattern.search(data)  # extract desired values from data
 		[calls, minutes, seconds] = [
@@ -72,6 +74,8 @@ def getData(address):
 		print('CANNOT CONNECT TO CISCO PHONE STATUS PAGE')
 		connectFail = 1					# step fail counter up by 1
 		return [None, None, connectFail]
+	finally:
+		connection.close()
 
 
 def calcPoints(calls, waitTime):
