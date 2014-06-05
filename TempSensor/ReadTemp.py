@@ -53,5 +53,5 @@ while True:
 		if DEBUG: print(tempC, tempF)
 		writeToFile(tempC,tempF)
 	if DEBUG: print()
-	writeToFile(None, None, new = True)
 	time.sleep(1)
+	writeToFile(None, None, new = True)
