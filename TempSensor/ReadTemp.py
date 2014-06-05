@@ -38,7 +38,7 @@ def readTemp(device):
     return tempC, tempF
 
 def writeToFile(tempC, tempF, new = False):
-	if !new:
+	if not new:
 		f = open('../webServer/TempReadings.txt','a')
 		f.write('tempC=' + str(tempC) + ', tempF=' + str(tempF) + '\n')
 		f.close()
