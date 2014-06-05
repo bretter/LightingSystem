@@ -37,15 +37,21 @@ def readTemp(device):
     tempF = tempC * 9.0 / 5.0 + 32.0
     return tempC, tempF
 
-def writeToFile(tempC, tempF):
-  f = open('../webServer/TempReadings.txt','w')
-  f.write('tempC=' + str(tempC) + ', tempF=' + str(tempF))
-  f.close()
+def writeToFile(tempC, tempF, new = False):
+	if !new:
+		f = open('../webServer/TempReadings.txt','a')
+		f.write('tempC=' + str(tempC) + ', tempF=' + str(tempF) + '\n')
+		f.close()
+	else:
+		f = open('../webServer/TempReadings.txt','w')
+		f.close()
+		
 
 while True:
 	for device in deviceFiles:
 		tempC, tempF = readTemp(device)
 		if DEBUG: print(tempC, tempF)
-#		writeToFile(tempC,tempF)
+		writeToFile(tempC,tempF)
 	if DEBUG: print()
+	writeToFile(None, None, new = True)
 	time.sleep(1)
