@@ -87,7 +87,7 @@ def calcPoints(calls, waitTime):
 
 def determineState(points, connectionFailure):
 	if connectionFailure:
-		return conLost
+		return allOn
 	elif points == 0:
 		return green
 	elif points >= 0 and points < 4:
