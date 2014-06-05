@@ -6,8 +6,8 @@ import sys
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
-baseDir = '/sys/bus/w1/devices'
-deviceFolder = glob.glob(baseDir + '28*')[0]
+baseDir = '/sys/bus/w1/devices/'
+deviceFolder = glob.glob(baseDir + '28-*')[0]
 deviceFile = deviceFolder + '/w1_slave'
 
 try:
