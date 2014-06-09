@@ -6,6 +6,8 @@ import sys
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
+time.sleep(10)
+
 baseDir = '/sys/bus/w1/devices/'
 deviceFolders = glob.glob(baseDir + '28-*')
 deviceFiles = []
@@ -16,8 +18,6 @@ try:
   DEBUG = sys.argv[1] == '-d'
 except IndexError:
   DEBUG = False
-
-# deviceFile = os.path.join(os.getcwd() + '/example.txt')
 
 def readTempRaw(device):
   f = open(device)
@@ -43,11 +43,12 @@ def writeToFile(tempC, tempF):
 	f.close()
 		
 
-while True:
-	for device in deviceFiles:
-		tempC, tempF = readTemp(device)
-		if DEBUG: print(tempC, tempF)
-	writeToFile(tempC,tempF)
-	if DEBUG: print()
-	time.sleep(1)
+if __name__ == '__main__':
+	while True:
+		for device in deviceFiles:
+			tempC, tempF = readTemp(device)
+			if DEBUG: print(tempC, tempF)
+		writeToFile(tempC,tempF)
+		if DEBUG: print()
+		time.sleep(2)
 
