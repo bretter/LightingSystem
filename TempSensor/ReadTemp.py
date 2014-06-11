@@ -39,7 +39,7 @@ def readTemp(device):
 
 def writeToFile(tempC, tempF):
 	f = open('../webServer/TempReadings.txt','w')
-	f.write(time.strftime("%m/%d/%Y %H:%M:%S", time.gmtime()) + 
+	f.write(time.strftime("%m/%d/%Y %H:%M:%S", time.localtime()) + 
 			' tempC=' + str(tempC) + ', tempF=' + str(tempF) + '\n')
 	f.close()
 		
