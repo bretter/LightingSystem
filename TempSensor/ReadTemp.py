@@ -2,54 +2,70 @@ import os
 import glob
 import time
 import sys
+import re
 
-os.system('modprobe w1-gpio')
-os.system('modprobe w1-therm')
-
-time.sleep(10)
 
 baseDir = '/sys/bus/w1/devices/'
-deviceFolders = glob.glob(baseDir + '28-*')
-deviceFiles = []
-for folder in deviceFolders:
-	deviceFiles.append(folder + '/w1_slave')
+writeFile = '/opt/LightingSystem/webServer/TempReadings.txt'
 
-try:
-  DEBUG = sys.argv[1] == '-d'
-except IndexError:
-  DEBUG = False
 
-def readTempRaw(device):
-  f = open(device)
-  lines = f.readlines()
-  f.close()
-  return lines
-
-def readTemp(device):
-  lines = readTempRaw(device)
-  while lines[0].strip()[-3:] != 'YES':
-    time.sleep(0.2)
-    lines = readTempRaw(device)
-  position = lines[1].find('t=')
-  if position != -1:
-    tempString = lines[1][position+2:]
-    tempC = float(tempString)/1000.0
-    tempF = tempC * 9.0 / 5.0 + 32.0
-    return tempC, tempF
+def findSensorDir():
+	try:
+		deviceFolder = glob.glob(baseDir + '28-*')[0]
+		return deviceFolder
+	except IndexError:
+		print('DS18B20 temperature sensor not detected. Retrying in 10 seconds.')
+		time.sleep(10)
+		return findSensor()
 
 def writeToFile(tempC, tempF):
-	f = open('../webServer/TempReadings.txt','w')
-	f.write(time.strftime("%m/%d/%Y %H:%M:%S", time.localtime()) + 
+	with open(writeFile, mode='w') as f:
+		f.write(time.strftime("%m/%d/%Y %H:%M:%S", time.localtime()) + 
 			' tempC=' + str(tempC) + ', tempF=' + str(tempF) + '\n')
-	f.close()
-		
+	
 
+class TempSensor(object):
+	yesPattern = re.compile(r'YES')
+	tempPattern = re.compile(r't=(\d+)')
+	
+	def __init__(self, path):
+		self.path = path
+		self._ready = False
+		self._temp = []
+	
+	def _getData(self):
+		with open(self.path) as f:
+			data = f.read()
+		if self.yesPattern.search(data):
+			self._ready = True
+		else:
+			self._ready = False
+		return data
+
+	@property
+	def temp(self):
+		while not self._ready:
+			data = self._getData()
+		self._ready = False
+		tempString = self.tempPattern.search(data).group(1)
+		tempC = float(tempString) / 1000.0
+		tempF = tempC * 9.0 / 5.0 + 32.0
+		self._temp = [tempC, tempF]
+		return self._temp
+			
 if __name__ == '__main__':
-	while True:
-		for device in deviceFiles:
-			tempC, tempF = readTemp(device)
-			if DEBUG: print(tempC, tempF)
-		writeToFile(tempC,tempF)
-		if DEBUG: print()
-		time.sleep(2)
+	try:
+		DEBUG = sys.argv[1] == '-d'
+	except IndexError:
+		DEBUG = False
 
+	os.system('sudo modprobe w1-gpio')
+	os.system('sudo modprobe w1-therm')
+	deviceFolder = findSensorDir()
+	sensor = TempSensor(deviceFolder + '/w1_slave')
+	while True:
+		[tempC, tempF] = sensor.temp
+		if DEBUG: print('tempC=' + str(tempC), 'tempF=' + str(tempF))
+		writeToFile(tempC, tempF)
+		time.sleep(2)
+	
