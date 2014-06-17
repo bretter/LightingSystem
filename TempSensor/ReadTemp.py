@@ -1,3 +1,13 @@
+"""
+ReadTemp for Raspberry Pi
+
+James Dryden and Brett Nelson
+OSIsoft
+
+Reads temperature values from a DS18B20 sensor and writes the timestamp 
+and values to a .txt file
+"""
+
 import os
 import glob
 import time
