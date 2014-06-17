@@ -33,7 +33,12 @@ def writeToFile(tempC, tempF):
 		f.write(time.strftime("%m/%d/%Y %H:%M:%S", time.localtime()) + 
 			' tempC=' + str(tempC) + ', tempF=' + str(tempF) + '\n')
 	
-
+def initializeSensor():
+	os.system('sudo modprobe w1-gpio')
+	os.system('sudo modprobe w1-therm')
+	deviceFolder = findSensorDir()
+	return TempSensor(deviceFolder + '/w1_slave')
+	
 class TempSensor(object):
 	yesPattern = re.compile(r'YES')
 	tempPattern = re.compile(r't=(\d+)')
@@ -69,10 +74,7 @@ if __name__ == '__main__':
 	except IndexError:
 		DEBUG = False
 
-	os.system('sudo modprobe w1-gpio')
-	os.system('sudo modprobe w1-therm')
-	deviceFolder = findSensorDir()
-	sensor = TempSensor(deviceFolder + '/w1_slave')
+	sensor = initializeSensor()
 	while True:
 		[tempC, tempF] = sensor.temp
 		if DEBUG: print('tempC=' + str(tempC), 'tempF=' + str(tempF))
