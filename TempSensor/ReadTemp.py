@@ -26,7 +26,7 @@ def findSensorDir():
 	except IndexError:
 		print('DS18B20 temperature sensor not detected. Retrying in 10 seconds.')
 		time.sleep(10)
-		return findSensor()
+		return findSensorDir()
 
 def writeToFile(tempC, tempF):
 	with open(writeFile, mode='w') as f:
