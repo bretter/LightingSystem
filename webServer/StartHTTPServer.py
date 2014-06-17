@@ -12,4 +12,10 @@ httpd = SocketServer.TCPServer(("", PORT), Handler)
 
 print 'Serving HTTP at port', PORT
 
-httpd.serve_forever()
+try:
+	print('serving...')
+	httpd.serve_forever()
+except KeyboardInterrupt:
+	print('Closing socket.')
+	httpd.socket.close()
+	exit()
